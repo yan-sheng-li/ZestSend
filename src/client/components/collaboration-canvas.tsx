@@ -95,6 +95,7 @@ export function CollaborationCanvas({ accent, locale, onFeatureUsed, provider }:
   const [hexInput, setHexInput] = useState(accent.toUpperCase());
   const [eraser, setEraser] = useState(false);
   const [panMode, setPanMode] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
   const [size, setSize] = useState(4);
   const [version, setVersion] = useState(0);
   const [surfaceSize, setSurfaceSize] = useState({ height: initialWorldHeight, width: initialWorldWidth });
@@ -192,10 +193,11 @@ export function CollaborationCanvas({ accent, locale, onFeatureUsed, provider }:
   };
 
   const startStroke = (event: ReactPointerEvent<SVGSVGElement>) => {
-    if (panMode || event.button === 1 || event.shiftKey) {
+    if (panMode || event.button === 1 || event.button === 2 || event.shiftKey) {
       event.preventDefault();
       event.currentTarget.setPointerCapture(event.pointerId);
       interactionRef.current = { lastX: event.clientX, lastY: event.clientY, mode: "pan" };
+      setIsPanning(true);
       return;
     }
     const point = pointFromEvent(event);
@@ -254,6 +256,7 @@ export function CollaborationCanvas({ accent, locale, onFeatureUsed, provider }:
     }
     activeStrokeRef.current = null;
     interactionRef.current = null;
+    setIsPanning(false);
   };
 
   const updateZoom = (nextZoom: number, clientX?: number, clientY?: number) => {
@@ -342,7 +345,8 @@ export function CollaborationCanvas({ accent, locale, onFeatureUsed, provider }:
       </div>
       <div className="zest-canvas-surface-wrap">
         <svg
-          className={`zest-canvas-surface ${eraser ? "zest-canvas-erasing" : panMode ? "zest-canvas-panning" : ""}`}
+          className={`zest-canvas-surface ${eraser ? "zest-canvas-erasing" : panMode ? "zest-canvas-panning" : ""} ${isPanning ? "zest-canvas-panning-active" : ""}`}
+          onContextMenu={(event) => event.preventDefault()}
           onPointerCancel={finishStroke}
           onPointerDown={startStroke}
           onPointerMove={continueStroke}

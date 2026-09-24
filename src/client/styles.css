@@ -600,6 +600,10 @@ body {
   cursor: grabbing;
 }
 
+.zest-canvas-panning-active {
+  cursor: grabbing;
+}
+
 .zest-canvas-zoom-value {
   display: inline-flex;
   min-width: 2.7rem;
